@@ -1,13 +1,13 @@
-const cells = require("./cells");
+import Cells from "./cells";
 
 describe("Cells: Initialiser", () => {
   test("guard clause, only accepts a number", () => {
-    expect(cells("IV")).toBe(undefined);
+    expect(Cells("IV")).toBe(undefined);
   });
 });
 
 describe("Array of cells", () => {
-  const arrayOfCells = cells(10);
+  const arrayOfCells = Cells(10);
 
   test("object is array", () => {
     expect(Array.isArray(arrayOfCells)).toBeTruthy();
