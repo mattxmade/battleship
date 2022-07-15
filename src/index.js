@@ -3,6 +3,8 @@ import Grid from "./grid";
 import Player from "./player";
 import Background from "./background";
 
+import Effect from "./ui/effect";
+
 // import webpBattleship from "./battleship.webp";
 import webpVictory from "./victory.webp";
 
@@ -14,7 +16,6 @@ const playNo = document.querySelector(".play-no");
 
 const modal = document.querySelector("dialog");
 
-const body = document.body;
 const gameZone = document.querySelector(".game-zone");
 
 // three.js water background
@@ -64,91 +65,10 @@ let parent;
 let iElement;
 let isDrawing = false;
 
-const top = [{ top: "25%" }, { top: "-25%" }];
-const left = [{ left: "25%" }, { left: "-25%" }];
-const right = [{ right: "25%" }, { right: "-25%" }];
-const bottom = [{ bottom: "25%" }, { bottom: "-25%" }];
-
-const topLeft = [
-  { left: "25%", top: "25%" },
-  { left: "-25%", top: "-25%" },
-];
-
-const topRight = [
-  { right: "25%", top: "25%" },
-  { right: "-25%", top: "-25%" },
-];
-
-const bottomLeft = [
-  { left: "25%", bottom: "25%" },
-  { left: "-25%", bottom: "-25%" },
-];
-
-const bottomRight = [
-  { right: "25%", bottom: "25%" },
-  { right: "-25%", bottom: "-25%" },
-];
-
-const directions = [
-  top,
-  topRight,
-  right,
-  bottomRight,
-  bottom,
-  bottomLeft,
-  left,
-  topLeft,
-];
-
 cells.forEach((cell) => {
   cell.addEventListener("mouseover", appendHandler);
   cell.addEventListener("click", (e) => {});
 });
-
-const palette = [
-  {
-    width: "25%",
-    height: "25%",
-    backgroundColor: "red",
-  },
-  {
-    width: "15%",
-    height: "15%",
-    backgroundColor: "transparent",
-  },
-];
-
-const timing = {
-  duration: 300,
-  iterations: 1,
-};
-
-function Effect(e) {
-  const effect = document.createElement("div");
-
-  effect.style.width = "100%";
-  effect.style.height = "100%";
-  effect.style.display = "grid";
-  effect.style.position = "absolute";
-  effect.style.placeItems = "center";
-
-  e.target.appendChild(effect);
-  return effect;
-}
-
-function Particle(offset) {
-  const particle = document.createElement("div");
-
-  particle.style.width = "25%";
-  particle.style.height = "50%";
-  particle.style.position = "absolute";
-  particle.style.borderRadius = "100%";
-
-  particle.animate(palette, timing);
-  particle.animate(offset, timing);
-
-  return particle;
-}
 
 const dockyard = document.querySelectorAll(".dock");
 dockyard.forEach((dock) => {
@@ -300,8 +220,9 @@ function handleAttack(e) {
     actionCarousel(400);
   }
 
-  const effect = Effect(e);
-  directions.forEach((direction) => effect.appendChild(Particle(direction)));
+  e.target.appendChild(Effect());
+  //const effect = Effect(e);
+  //directions.forEach((direction) => effect.appendChild(Particle(direction)));
 
   updatetValidPositions(attackPos, validPositions);
   positionsPlayed.push(attackPos);
@@ -1055,6 +976,7 @@ function actionCarousel(percentage) {
   // if (percentage > 800) percentage = 0;
 }
 
+const body = document.body;
 const loadscreen = document.querySelector(".load-screen");
 
 setTimeout(() => {
