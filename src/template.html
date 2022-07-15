@@ -8,16 +8,236 @@
     <title><%= htmlWebpackPlugin.options.title %></title>
   </head>
   <body>
+    <script>document.body.style.visibility="hidden"</script>
 
     <div class="wrapper">
-      <main>
-        <div class="game-board">
-          <div class="grid">
-            <!-- dynamic cells -->
+      <div class="sidebar">
+        <aside class="player-aside">
+          <h2>Player Fleet</h2>
+          <div class="stats">
+
+            <div class="ship-stats">
+              <ul class="bars">
+                <li class="carrierrrr-bar bar"></li>
+                <li class="carrierrrr-bar bar"></li>
+                <li class="carrierrrr-bar bar"></li>
+                <li class="carrierrrr-bar bar"></li>
+                <li class="carrierrrr-bar bar"></li>
+                <li class="non-bar"><h4>Carrier</h4></li>
+              </ul>
+            </div>
+
+            <div class="ship-stats">
+              <ul class="bars">
+                <li class="battleship-bar bar"></li>
+                <li class="battleship-bar bar"></li>
+                <li class="battleship-bar bar"></li>
+                <li class="battleship-bar bar"></li>
+                <li class="non-bar"><h4>Battleship</h4></li>
+                </ul>
+            </div>
+
+            <div class="ship-stats">
+              <ul class="bars">
+                <li class="cruiserrrr-bar bar"></li>
+                <li class="cruiserrrr-bar bar"></li>
+                <li class="cruiserrrr-bar bar"></li>
+                <li class="non-bar"><h4>Cruiser</h4></li>
+              </ul>
+            </div>
+
+            <div class="ship-stats">
+              <ul class="bars">
+                <li class="submarinee-bar bar"></li>
+                <li class="submarinee-bar bar"></li>
+                <li class="submarinee-bar bar"></li>
+                <li class="non-bar"><h4>Submarine</h4></li>
+              </ul>
+            </div>
+
+            <div class="ship-stats">
+              <ul class="bars">
+                <li class="destroyerr-bar bar"></li>
+                <li class="destroyerr-bar bar"></li>
+                <li class="non-bar"><h4>Destroyer</h4></li>
+              </ul>
+            </div>
           </div>
+
+          <div class="dock carrierrrr">
+            <div id="carrierrrr" class="carrierrrr-5 fleet ship" data-orientate="east" draggable="true">
+            </div>
+          </div>
+          <div class="dock battleship">
+            <div id="battleship" class="battleship-4 fleet ship" data-orientate="east" draggable="true">
+            </div>
+          </div>
+          <div class="dock cruiserrrr">
+            <div id="cruiserrrr" class="cruiserrrr-3 fleet ship" data-orientate="east" draggable="true">
+            </div>
+          </div>
+          <div class="dock submarinee">
+            <div id="submarinee" class="submarinee-3 fleet ship" data-orientate="east" draggable="true">
+            </div>
+          </div>
+          <div class="dock destroyerr">
+            <div id="destroyerr" class="destroyerr-2 fleet ship" data-orientate="east" draggable="true">
+            </div>
+          </div>
+        </aside>
+
+        <section class="guide">
+          <h2>How To Play</h2>
+          <ul>
+            <li><p>Drag 'n' drop ships onto the grid</p></li>
+            <li><p>Right-click to rotate ships</p></li>
+            <li><p>Click a cell to target CPU ships</p></li>
+            <li><p>Capture all opponent ships to win</p></li>
+          </ul>
+        </section>
+        <button class="js-button-start">
+          <div class="button-mask"></div>
+          BEGIN<i class="fas fa-bolt"></i>GAME
+        </button>
+      </div>
+
+      <div class="game-zone">
+        <i class="fas fa-compass"></i>
+        <main>
+          <div class="game-board">
+            <div class="grid">
+              <div class="grid-blocker"></div>
+              <!-- dynamic cells -->
+            </div>
+          </div>
+
+          <div class="grid-aside">
+            <div class="titantron">
+              <div class="chevron">
+                <h2 class="action-text 0 title">Battleship</h2>
+                <h2 class="action-text 100 charge">Deploying</h2>
+                <h2 class="action-text 200 play">Your Turn!</h2>
+                <h2 class="action-text 300 cpu">CPU Turn!</h2>
+                <h2 class="action-text 400 miss">Miss...</h2>
+                <h2 class="action-text 500 hit">Hit!</h2>
+                <h2 class="action-text 600 sunk">SUNK!</h2>
+                <h2 class="action-text 700 win">You Win!</h2>
+                <h2 class="action-text 800 lose">You Lose!</h2>
+              </div>
+            </div>
+
+            <div class="stats-overlay">
+              <h2>Computer fleet</h2>
+              <div class="ship-stats">
+                <h4>Carrier</h4>
+                <ul class="bars">
+                  <li class="carrierrrr-bar-cpu bar"></li>
+                  <li class="carrierrrr-bar-cpu bar"></li>
+                  <li class="carrierrrr-bar-cpu bar"></li>
+                  <li class="carrierrrr-bar-cpu bar"></li>
+                  <li class="carrierrrr-bar-cpu bar"></li>
+                </ul>
+              </div>
+
+              <div class="ship-stats">
+                <h4>Battleship</h4>
+                <ul class="bars">
+                  <li class="battleship-bar-cpu bar"></li>
+                  <li class="battleship-bar-cpu bar"></li>
+                  <li class="battleship-bar-cpu bar"></li>
+                  <li class="battleship-bar-cpu bar"></li>
+                </ul>
+              </div>
+
+              <div class="ship-stats">
+                <h4>Cruiser</h4>
+                <ul class="bars">
+                  <li class="cruiserrrr-bar-cpu bar"></li>
+                  <li class="cruiserrrr-bar-cpu bar"></li>
+                  <li class="cruiserrrr-bar-cpu bar"></li>
+                </ul>
+              </div>
+
+              <div class="ship-stats">
+                <h4>Submarine</h4>
+                <ul class="bars">
+                  <li class="submarinee-bar-cpu bar"></li>
+                  <li class="submarinee-bar-cpu bar"></li>
+                  <li class="submarinee-bar-cpu bar"></li>
+                </ul>
+              </div>
+
+              <div class="ship-stats">
+                <h4>Destroyer</h4>
+                <ul class="bars">
+                  <li class="destroyerr-bar-cpu bar"></li>
+                  <li class="destroyerr-bar-cpu bar"></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </main>
+
+        <aside class="computer-aside">
+          <div class="dock-cpu carrierrrr-cpu">
+            <div id="carrierrrr-cpu" class="carrierrrr-5 cpu-fleet cpu-ship" data-orientate="east">
+            </div>
+          </div>
+          <div class="dock-cpu battleship-cpu">
+            <div id="battleship-cpu" class="battleship-4 cpu-fleet cpu-ship" data-orientate="east">
+            </div>
+          </div>
+          <div class="dock-cpu cruiserrrr-cpu">
+            <div id="cruiserrrr-cpu" class="cruiserrrr-3 cpu-fleet cpu-ship" data-orientate="east">
+            </div>
+          </div>
+          <div class="dock-cpu submarinee-cpu">
+            <div id="submarinee-cpu" class="submarinee-3 cpu-fleet cpu-ship" data-orientate="east">
+            </div>
+          </div>
+          <div class="dock-cpu destroyerr-cpu">
+            <div id="destroyerr-cpu" class="destroyerr-2 cpu-fleet cpu-ship" data-orientate="east">
+            </div>
+          </div>
+        </aside>
+      
+        <div class="score">
+          <ul>
+            <li class="point user-point"></li>
+            <li class="point user-point"></li>
+            <li class="point user-point"></li>
+            <li class="point user-point"></li>
+            <li class="point user-point"></li>
+          </ul>
+          <i class="fas fa-medal"></i>
+          <ul>
+            <li class="point cpu-point"></li>
+            <li class="point cpu-point"></li>
+            <li class="point cpu-point"></li>
+            <li class="point cpu-point"></li>
+            <li class="point cpu-point"></li>
+          </ul>
         </div>
-      </main>
+      </div>
+
     </div>
+
+  <dialog>
+    <div class="modal">
+      <div class="modal-elements">
+        <h2>You Win!</h2>
+        <img>
+        <h2>Do you want to play another game?</h2>
+        <div class="new-game">
+          <i class="fas fa-check-square play-yes"></i>
+          <i class="fas fa-window-close play-no"></i>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+    <!-- <div class="load-screen"></div> -->
 
   </body>
 </html>
