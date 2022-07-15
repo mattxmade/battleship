@@ -4,7 +4,7 @@ import Player from "./player";
 import Background from "./background";
 
 import Effect from "./ui/effect";
-import generateMasks from "./masks";
+import generateMasks from "./ui/masks";
 
 // import webpBattleship from "./battleship.webp";
 import webpVictory from "./victory.webp";
