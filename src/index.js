@@ -4,6 +4,7 @@ import Player from "./player";
 import Background from "./background";
 
 import Effect from "./ui/effect";
+import generateMasks from "./masks";
 
 // import webpBattleship from "./battleship.webp";
 import webpVictory from "./victory.webp";
@@ -120,28 +121,12 @@ function computerPlay() {
   cell.click();
 }
 
-const attackSets = {
-  p1: {
-    validPositions: player1Valid,
-    scoreIndex: pointsIndex.player1,
-    defenderShields: computerShieldsUI,
-    points: document.querySelectorAll(".user-point"),
-  },
-
-  p2: {
-    validPositions: player2Valid,
-    scoreIndex: pointsIndex.player2,
-    defenderShields: playerShieldsUI,
-    points: document.querySelectorAll(".cpu-point"),
-  },
-};
-
 const gridBlocker = document.querySelector(".grid-blocker");
 
 let normalPlay = true;
 
 function handleAttack(e) {
-  console.log(attacker, defender);
+  // console.log(attacker, defender);
 
   let validPositions = player1Valid;
   let scoreIndex = pointsIndex.player1;
@@ -155,14 +140,12 @@ function handleAttack(e) {
     points = document.querySelectorAll(".cpu-point");
   }
 
-  //const attackSet = attacker === player1 ? attackSets.p1 : attackSets.p2;
-
   const attackPos = e.target.dataset.id;
 
   // human player can't hit own ship
   if (attacker === player1) {
     if (player1.board.heldPositions.flat(2).includes(attackPos)) {
-      console.log("ally vessel");
+      // console.log("ally vessel");
       return;
     }
   }
@@ -172,14 +155,14 @@ function handleAttack(e) {
     defender.fleet
   );
 
-  console.log("Ship name: " + currentShip);
+  // console.log("Ship name: " + currentShip);
 
   if (currentShip !== undefined) {
-    console.log("hit");
+    // console.log("hit");
     actionCarousel(500);
 
     currentShip.shields--;
-    console.log("Shields " + currentShip.shields);
+    // console.log("Shields " + currentShip.shields);
 
     let removeFromIndex;
 
@@ -196,11 +179,11 @@ function handleAttack(e) {
     }
 
     if (currentShip.shields === 0) {
-      console.log("SUNK");
+      // console.log("SUNK");
       defender.board.stats.available -= 1;
 
-      console.log("Ship destroyed!");
-      console.log(defender.board.stats.available + " ships remaining...");
+      // console.log("Ship destroyed!");
+      // console.log(defender.board.stats.available + " ships remaining...");
 
       if (attacker === player1) revealCpuShip(currentShip.name);
 
@@ -213,7 +196,7 @@ function handleAttack(e) {
     e.target.previousSibling.classList.add("fa-bolt");
     e.target.previousSibling.classList.add("hit-indicator");
   } else {
-    console.log("miss");
+    // console.log("miss");
     e.target.previousSibling.classList.add("fa-minus");
     e.target.previousSibling.classList.add("miss-indicator");
 
@@ -221,8 +204,6 @@ function handleAttack(e) {
   }
 
   e.target.appendChild(Effect());
-  //const effect = Effect(e);
-  //directions.forEach((direction) => effect.appendChild(Particle(direction)));
 
   updatetValidPositions(attackPos, validPositions);
   positionsPlayed.push(attackPos);
@@ -243,7 +224,6 @@ function handleAttack(e) {
         break;
 
       case false:
-        //setTimeout(() => modal.close(), 5000);
         setTimeout(actionCarousel, 6000, 300);
         setTimeout(computerPlay, 10500);
         gridState();
@@ -262,7 +242,6 @@ function handleAttack(e) {
         break;
 
       case false:
-        //setTimeout(() => modal.close(), 5000);
         setTimeout(actionCarousel, 6000, 300);
         setTimeout(computerPlay, 10500);
         normalPlay = true;
@@ -270,14 +249,6 @@ function handleAttack(e) {
     }
   }
 }
-
-// const closeBtn = document.querySelector(".fa-times-circle");
-// closeBtn.style.cursor = "pointer";
-
-// closeBtn.addEventListener("click", () => {
-//   modal.close();
-//   normalPlay = true;
-// });
 
 function revealCpuShip(sunkShip) {
   normalPlay = false;
@@ -287,7 +258,7 @@ function revealCpuShip(sunkShip) {
       setTimeout(ship.classList.add("reveal-ship"), 600);
     }
   });
-  //modal.showModal();
+
   actionCarousel(600);
 }
 
@@ -295,22 +266,13 @@ function gridState() {
   gridBlocker.classList.toggle("blocker");
 }
 
-function setValidPositions(player, playerCpu) {
+function setValidPositions(player, validPositions) {
   const gridTotal = grid.index;
 
   gridTotal.forEach((position) => {
-    if (player1.board.heldPositions.flat(2).includes(position)) return;
-    player1Valid.push(position);
+    if (player.board.heldPositions.flat(2).includes(position)) return;
+    validPositions.push(position);
   });
-
-  //console.log(player1Valid);
-
-  gridTotal.forEach((position) => {
-    if (player2.board.heldPositions.flat(2).includes(position)) return;
-    player2Valid.push(position);
-  });
-
-  //console.log(player2Valid);
 }
 
 function updatetValidPositions(attackPos, validPositions) {
@@ -321,20 +283,17 @@ function updatetValidPositions(attackPos, validPositions) {
   });
 
   if (indexToRemove !== undefined) validPositions.splice(indexToRemove, 1);
-
-  //console.log(validPositions);
 }
 
 function winner() {
-  // declare winner | Game Module | adjudicator
   if (player2.board.stats.available === 0) {
-    console.log("YOU WIN!");
+    // console.log("YOU WIN!");
     actionCarousel(700);
     modal.showModal();
     return true;
   }
   if (player1.board.stats.available === 0) {
-    console.log("YOU LOSE!");
+    // console.log("YOU LOSE!");
     actionCarousel(800);
     modal.showModal();
     return true;
@@ -450,6 +409,7 @@ function mouseUp(e) {
       }, 1);
     }
   }
+
   if (docksEmpty() && setup) buttonMask.classList.add("toggle-button-mask");
   else buttonMask.classList.remove("toggle-button-mask");
 }
@@ -459,7 +419,7 @@ function setLocators(shipElement, player) {
 
   const playerShip = player.ships[shipElement.id.slice(0, 10)];
 
-  console.log("Sheilds: " + playerShip.shields);
+  // console.log("Sheilds: " + playerShip.shields);
 
   let requiredPositions = playerShip.shields;
   playerShip.length = requiredPositions;
@@ -482,9 +442,9 @@ function setLocators(shipElement, player) {
   if (gridPosition.length !== requiredPositions)
     return newPosition(shipElement, player);
 
-  //console.log(shipElement.id + " position: " + gridPosition);
-  //console.log("Direction: " + shipElement.dataset.orientate);
-  //console.log("");
+  // console.log(shipElement.id + " position: " + gridPosition);
+  // console.log("Direction: " + shipElement.dataset.orientate);
+  // console.log("");
 
   // clear ship's previous position
   if (playerShip.position.length !== 0) playerShip.position = [];
@@ -638,7 +598,6 @@ function deployCpuShips() {
   }, 4500);
 }
 
-const threejsBackground = document.querySelector(".threejs-bg");
 const buttonMask = document.querySelector(".button-mask");
 
 const commenceGame = document.querySelector(".js-button-start");
@@ -653,7 +612,6 @@ commenceGame.addEventListener("click", () => {
     attacker = player1;
     defender = player2;
   }
-  // else fire modal
 });
 
 function prepareBoard() {
@@ -669,92 +627,18 @@ function prepareBoard() {
     player2.board.actions.addShipToBoard(ship.position);
   });
 
-  setValidPositions(player1, player2);
+  setValidPositions(player1, player1Valid);
+  setValidPositions(player2, player2Valid);
 
   dockyard.forEach((dock) => (dock.style.cursor = "default"));
 
   cells.forEach((cell) => (cell.style.zIndex = "unset"));
 
-  generateMasks();
+  generateMasks(cells, handleAttack);
   actionCarousel(200);
 
   buttonMask.classList.remove("toggle-button-mask");
   setup = false;
-  //threejsBackground.style.zIndex = -1;
-}
-
-let gridInitDelay = 5;
-
-function generateMasks() {
-  cells.forEach((cell, index) => {
-    const icon = document.createElement("i");
-    icon.style.borderRadius = "100%";
-    icon.style.position = "absolute";
-    icon.style.fontSize = "2rem";
-    icon.style.height = "55%";
-    icon.style.width = "55%";
-
-    icon.style.zIndex = 9;
-    icon.style.display = "grid";
-    icon.style.placeItems = "center";
-
-    icon.classList.add("play-indicators");
-    icon.classList.add("fas");
-
-    cell.appendChild(icon);
-
-    const mask = document.createElement("div");
-    mask.dataset.id = cell.id;
-    mask.dataset.index = index;
-    mask.classList.add("mask");
-
-    mask.style.zIndex = 10;
-    mask.style.width = "100%";
-    mask.style.height = "100%";
-    mask.style.cursor = "cell";
-    mask.style.position = "absolute";
-
-    mask.style.display = "flex";
-    mask.style.alignItems = "center";
-    mask.style.justifyContent = "center";
-    mask.addEventListener("click", handleAttack);
-
-    mask.addEventListener("mouseenter", hoverMode);
-    mask.addEventListener("mouseleave", removePara);
-
-    cell.appendChild(mask);
-
-    setTimeout(() => {
-      mask.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-    }, gridInitDelay);
-
-    setTimeout(() => {
-      mask.style.backgroundColor = "transparent";
-    }, gridInitDelay + 5);
-
-    gridInitDelay += 5;
-  });
-}
-
-function hoverMode(e) {
-  const p = document.createElement("p");
-  p.textContent = e.target.dataset.id;
-  p.style.color = "white";
-  p.style.position = "absolute";
-  p.style.top = "0.25rem";
-  p.style.left = "0.25rem";
-  p.style.zIndex = -100;
-  e.target.appendChild(p);
-}
-
-function removePara(e) {
-  let para;
-  if (e.target.childNodes.length > 0) {
-    e.target.childNodes.forEach((child) => {
-      if (child.tagName === "P") para = child;
-    });
-  }
-  para.remove();
 }
 
 function allShipsPlaced() {
@@ -847,21 +731,6 @@ const ui = {
   },
 };
 
-// window.onload = () => {
-//   // ui.feedback.titantron.outerBody.animate(
-//   //   ui.animators.titantron.properties,
-//   //   ui.animators.titantron.timing
-//   // );
-//   // ui.feedback.titantron.innerBody.animate(
-//   //   ui.animators.chevron.properties,
-//   //   ui.animators.chevron.timing
-//   // );
-//   // ui.feedback.titantron.innerText.animate(
-//   //   ui.animators.actionText.properties,
-//   //   ui.animators.actionText.timing
-//   // );
-// };
-
 const actionTextGrp = document.querySelectorAll(".action-text");
 
 actionTextGrp.forEach((action) =>
@@ -895,6 +764,9 @@ playYes.addEventListener("click", (e) => {
 
   pointsIndex.player1 = 0;
   pointsIndex.player2 = 0;
+
+  player1.board.stats.available = 5;
+  player2.board.stats.available = 5;
 
   player1.fleet.forEach((ship) => {
     ship.shields = ship.length;
@@ -961,7 +833,6 @@ function popOff(number, source) {
   for (let i = 0; i !== number; i++) {
     source.pop();
   }
-  console.log(source);
 }
 
 function actionCarousel(percentage) {
