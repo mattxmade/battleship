@@ -429,7 +429,7 @@ main {
 }
 
 .show {
-  right: 0;
+  transform: translate(-35rem, 0);
 }
 
 /*=============
