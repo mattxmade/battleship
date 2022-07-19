@@ -737,3 +737,10 @@ const Battleship = (() => {
 
 const commenceGame = document.querySelector(".js-button-start");
 commenceGame.addEventListener("click", Battleship.startGame);
+
+const sidebrBtn = document.querySelector(".js-sidebar-btn");
+const sidebar = document.querySelector(".sidebar");
+
+sidebrBtn.addEventListener("click", (e) => {
+  sidebar.classList.toggle("show");
+});
