@@ -1,28 +1,42 @@
-import ship from "./ship";
-
 function gameBoard(belongsTo) {
   if (belongsTo === undefined || belongsTo === null) return;
 
   const stats = {
-    missed: 0,
+    misses: [],
     available: 5,
     belongsTo: belongsTo,
   };
 
-  const fleet = {
-    carrier: ship(5),
-    cruiser: ship(3),
-    destroyer: ship(2),
-    submarine: ship(3),
-    battleship: ship(4),
+  const heldPositions = [];
+
+  const _positionFree = (position) => {
+    for (const area of position) {
+      for (const heldPosition of heldPositions.flat()) {
+        if (heldPosition.includes(area)) return false;
+      }
+    }
+
+    return true;
   };
 
-  const methods = {
-    receiveAttack: () => {},
-    addShipToBoard: () => {},
+  const actions = {
+    receiveAttack: (coordinate, fleet) => {
+      return fleet.find(
+        (ship) => ship.hit(coordinate, ship.position.flat()) === "hit"
+      );
+    },
+    addShipToBoard: (position) => {
+      if (_positionFree(position)) heldPositions.push(position);
+    },
+    clearPositions: () => {
+      while (heldPositions.length) {
+        heldPositions.pop();
+        if (heldPositions.length === 0) break;
+      }
+    },
   };
 
-  return { stats, fleet, methods };
+  return { stats, actions, heldPositions };
 }
 
-module.exports = gameBoard;
+export default gameBoard;
