@@ -1,4 +1,4 @@
-const gameBoard = require("./gameBoard");
+import gameBoard from "./gameBoard";
 
 describe("Gameboard: Initialiser", () => {
   test("input is empty", () => {
@@ -11,20 +11,17 @@ describe("Gameboard: Game Component", () => {
 
   test("validate object stats", () => {
     expect(board.stats).toMatchObject({
-      missed: 0,
+      misses: [],
       available: 5,
       belongsTo: "player1",
     });
   });
 
-  test("validate object fleet", () => {
-    expect(Object.keys(board.fleet).length).toEqual(5);
-  });
-
   test("validate object methods", () => {
-    expect(board.methods).toMatchObject({
+    expect(board.actions).toMatchObject({
       receiveAttack: expect.any(Function),
       addShipToBoard: expect.any(Function),
+      clearPositions: expect.any(Function),
     });
   });
 });
