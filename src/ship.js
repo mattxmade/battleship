@@ -1,27 +1,36 @@
-function ship(length) {
-  const position = [];
+function Ship(length, name) {
+  let shield = length;
 
-  let shields = length;
+  const shields = {
+    get: () => shield,
+    hit: () => shield--,
+    reset: () => (shield = length),
+  };
 
-  const hit = (coordinate) => {
-    let confirm = "miss";
+  let position = [];
+  let orientation = "east";
 
-    position.forEach((area, index) => {
-      if (area === coordinate) {
-        confirm = "hit";
-        position.splice(index, 1);
-        shields = position.length;
-      }
-    });
+  const hit = (coordinate, position) => {
+    if (position.includes(coordinate)) {
+      shields.hit();
+      return "hit";
+    }
 
-    return confirm;
+    return "miss";
   };
 
   const isSunk = () => {
-    return shields === 0 ? true : false;
+    return shields.get() === 0 ? true : false;
   };
 
-  return { position, hit, isSunk };
+  return {
+    name,
+    shields,
+    position,
+    orientation,
+    hit,
+    isSunk,
+  };
 }
 
-module.exports = ship;
+export default Ship;
