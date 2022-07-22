@@ -1,57 +1,40 @@
 import "./style.css";
-import Grid from "./grid";
 import Player from "./player";
 import Background from "./background";
 
 import Effect from "./ui/effect";
 import generateMasks from "./ui/masks";
-
-import webpVictory from "./victory.webp";
+import uiComponents from "./ui/components";
 
 const Battleship = (() => {
-  const gameZone = document.querySelector(".game-zone");
-  const gridContainer = document.querySelector(".grid");
-  const grid = Grid(gridContainer);
-  const cells = document.querySelectorAll(".cell");
+  const ui = uiComponents();
 
   // three.js water background
-  Background.init(gameZone);
+  Background.init(ui.board.gameZone);
   Background.animate();
 
-  const img = document.querySelector("img");
-  img.src = webpVictory;
-
+  // index
   const buttonMask = document.querySelector(".button-mask");
   const playYes = document.querySelector(".play-yes");
   const playNo = document.querySelector(".play-no");
   const modal = document.querySelector("dialog");
 
+  // model
   const player1 = Player();
   const player2 = Player();
 
-  let available = grid.index;
-
-  player1.actions = player1.board.actions;
-  player2.actions = player2.board.actions;
-
-  player1.attack = player2.board.actions.receiveAttack;
-  player2.attack = player1.board.actions.receiveAttack;
-
-  // place ships - ALL for mobile - quick game;
-  const cpuShips = document.querySelectorAll(".cpu-ship");
+  let available = ui.board.grid.index;
 
   let parent;
   let iElement;
   let setup = true;
   let isDrawing = false;
 
-  cells.forEach((cell) => {
+  ui.board.cells.forEach((cell) => {
     cell.addEventListener("mouseover", appendHandler);
-    cell.addEventListener("click", (e) => {});
   });
 
-  const dockyard = document.querySelectorAll(".dock");
-  dockyard.forEach((dock) => {
+  ui.player.user.docks.forEach((dock) => {
     dock.addEventListener("mouseover", appendHandler);
   });
 
@@ -60,18 +43,17 @@ const Battleship = (() => {
     } else parent = e.target;
   }
 
+  // model
+  // model.game.attacker
+  // model.game.defender
+
   let attacker;
   let defender;
   let normalPlay = true;
 
-  const playerShieldsUI = [];
-  const computerShieldsUI = [];
-  const shieldBars = document.querySelectorAll(".bar");
-
-  shieldBars.forEach((bar) => {
-    if (bar.classList[0].length > 14) computerShieldsUI.push(bar);
-    if (bar.classList[0].length === 14) playerShieldsUI.push(bar);
-  });
+  // model.player.valid = []
+  // model[player1].valid = []
+  // model[player2].valid = []
 
   const player1Valid = [];
   const player2Valid = [];
@@ -79,10 +61,10 @@ const Battleship = (() => {
 
   const pointsIndex = { player1: 0, player2: 0 };
 
-  const actionTextGrp = document.querySelectorAll(".action-text");
-
   function actionCarousel(percentage) {
-    actionTextGrp.forEach((action) => (action.style.top = `-${percentage}%`));
+    ui.score.actionTextGrp.forEach(
+      (action) => (action.style.top = `-${percentage}%`)
+    );
   }
 
   function computerPlay() {
@@ -107,18 +89,18 @@ const Battleship = (() => {
     cell.click();
   }
 
-  const gridBlocker = document.querySelector(".grid-blocker");
-
   function handleAttack(e) {
+    if (e.target.tagName === "P") return;
+
     let validPositions = player1Valid;
     let scoreIndex = pointsIndex.player1;
-    let defenderShields = computerShieldsUI;
+    let defenderShields = ui.player.computer.shields;
     let points = document.querySelectorAll(".user-point");
 
     if (attacker === player2) {
       validPositions = player2Valid;
       scoreIndex = pointsIndex.player2;
-      defenderShields = playerShieldsUI;
+      defenderShields = ui.player.user.shields;
       points = document.querySelectorAll(".cpu-point");
     }
 
@@ -143,8 +125,7 @@ const Battleship = (() => {
       // console.log("hit");
       actionCarousel(500);
 
-      currentShip.shields--;
-      // console.log("Shields " + currentShip.shields);
+      //console.log("Shields " + currentShip.shields.get());
 
       let removeFromIndex;
 
@@ -160,21 +141,20 @@ const Battleship = (() => {
         defenderShields.splice(removeFromIndex, 1);
       }
 
-      if (currentShip.shields === 0) {
-        // console.log("SUNK");
+      if (currentShip.shields.get() === 0) {
+        normalPlay = false;
         defender.board.stats.available -= 1;
 
+        // console.log("SUNK");
         // console.log("Ship destroyed!");
         // console.log(defender.board.stats.available + " ships remaining...");
 
         if (attacker === player1) revealCpuShip(currentShip.name);
+        if (attacker === player2) actionCarousel(600);
 
         points[scoreIndex].style.backgroundColor = "green";
         attacker === player1 ? pointsIndex.player1++ : pointsIndex.player2++;
-
-        if (normalPlay) actionCarousel(200);
       }
-
       e.target.previousSibling.classList.add("fa-bolt");
       e.target.previousSibling.classList.add("hit-indicator");
     } else {
@@ -224,8 +204,8 @@ const Battleship = (() => {
           break;
 
         case false:
-          setTimeout(actionCarousel, 6000, 300);
-          setTimeout(computerPlay, 10500);
+          setTimeout(actionCarousel, 6000, 200);
+          setTimeout(gridState, 10500);
           normalPlay = true;
           break;
       }
@@ -233,9 +213,7 @@ const Battleship = (() => {
   }
 
   function revealCpuShip(sunkShip) {
-    normalPlay = false;
-
-    cpuShips.forEach((ship) => {
+    ui.player.computer.fleet.forEach((ship) => {
       if (ship.id.slice(0, 10) === sunkShip) {
         setTimeout(ship.classList.add("reveal-ship"), 600);
       }
@@ -245,11 +223,11 @@ const Battleship = (() => {
   }
 
   function gridState() {
-    gridBlocker.classList.toggle("blocker");
+    ui.board.gridBlocker.classList.toggle("blocker");
   }
 
   function setValidPositions(player, validPositions) {
-    const gridTotal = grid.index;
+    const gridTotal = ui.board.grid.index;
 
     gridTotal.forEach((position) => {
       if (player.board.heldPositions.flat(2).includes(position)) return;
@@ -269,29 +247,27 @@ const Battleship = (() => {
 
   function winner() {
     if (player2.board.stats.available === 0) {
-      // console.log("YOU WIN!");
-      actionCarousel(700);
+      actionCarousel(700); // You Win!
       modal.showModal();
       return true;
     }
     if (player1.board.stats.available === 0) {
-      // console.log("YOU LOSE!");
-      actionCarousel(800);
+      actionCarousel(800); // You Lose!
       modal.showModal();
       return true;
     }
   }
 
-  window.addEventListener("mousemove", mouseMove);
-  window.addEventListener("mouseup", mouseUp);
+  window.addEventListener("mousemove", moveShip);
+  window.addEventListener("mouseup", placeShip);
 
   let shipRotation = 0;
 
-  const fleet = document.querySelectorAll(".fleet");
-  fleet.forEach((ship) => {
+  ui.board.gridContainer.oncontextmenu = disableContextMenu;
+
+  ui.player.user.fleet.forEach((ship) => {
     ship.oncontextmenu = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+      disableContextMenu(e);
 
       if (e.target.parentNode.classList.contains("dock")) return;
 
@@ -317,16 +293,21 @@ const Battleship = (() => {
       player1.ships[e.target.id].orientation = e.target.dataset.orientate;
     };
 
-    ship.addEventListener("mousedown", mouseDown);
+    ship.addEventListener("mousedown", selectShip);
   });
 
-  function mouseDown(e) {
+  function disableContextMenu(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  function selectShip(e) {
     if (e.target.tagName !== "DIV") return;
 
     isDrawing = true;
     iElement = e.target;
     iElement.style.cursor = "grabbing";
-    gridContainer.style.cursor = "grabbing";
+    ui.board.gridContainer.style.cursor = "grabbing";
 
     if (parent.classList.contains("dock")) {
       parent.classList.add("deploy");
@@ -345,12 +326,12 @@ const Battleship = (() => {
     document.body.appendChild(e.target);
   }
 
-  function mouseMove(e) {
+  function moveShip(e) {
     if (isDrawing && iElement !== undefined) {
       if (iElement.tagName !== "DIV") return;
 
       document.body.appendChild(iElement);
-      gridContainer.style.cursor = "grabbing";
+      ui.board.gridContainer.style.cursor = "grabbing";
 
       iElement.style.cursor = "grabbing";
       iElement.style.position = "absolute";
@@ -359,12 +340,12 @@ const Battleship = (() => {
     }
   }
 
-  function mouseUp(e) {
+  function placeShip(e) {
     if (isDrawing && iElement.tagName === "DIV") {
       isDrawing = false;
 
       iElement.style.cursor = "grab";
-      gridContainer.style.cursor = "default";
+      ui.board.gridContainer.style.cursor = "default";
 
       if (parent.classList.contains("dock")) {
         const docks = document.querySelectorAll(".dock");
@@ -401,7 +382,7 @@ const Battleship = (() => {
 
     const playerShip = player.ships[shipElement.id.slice(0, 10)];
 
-    let requiredPositions = playerShip.shields;
+    let requiredPositions = playerShip.shields.get();
     playerShip.length = requiredPositions;
 
     const positionDirection = elementDirection(shipElement.dataset.orientate);
@@ -430,7 +411,7 @@ const Battleship = (() => {
 
     playerShip.cells = [];
 
-    for (const cell of cells) {
+    for (const cell of ui.board.cells) {
       if (playerShip.position.flat().includes(cell.id))
         playerShip.cells.push(cell);
     }
@@ -454,7 +435,8 @@ const Battleship = (() => {
     parent = document.body;
     parent.appendChild(element);
 
-    for (const cell of cells) if (cell.id === randomCell) parent = cell;
+    for (const cell of ui.board.cells)
+      if (cell.id === randomCell) parent = cell;
 
     parent.appendChild(element);
     setLocators(element, player);
@@ -463,7 +445,7 @@ const Battleship = (() => {
   function locators(id, requiredPositions, incrementJump, shipElement, player) {
     let searchIndex;
 
-    cells.forEach((cell, index) => {
+    ui.board.cells.forEach((cell, index) => {
       if (cell.id === id) searchIndex = index;
     });
 
@@ -472,7 +454,7 @@ const Battleship = (() => {
     let currentCellNum = searchIndex;
 
     for (let i = 0; i < requiredPositions; i++) {
-      cells.forEach((cell, index) => {
+      ui.board.cells.forEach((cell, index) => {
         if (index === currentCellNum) {
           if (incrementJump === 1 || incrementJump === -1) {
             if (cell.id.slice(0, 1) === check) result.push(cell.id);
@@ -564,11 +546,10 @@ const Battleship = (() => {
     setValidPositions(player1, player1Valid);
     setValidPositions(player2, player2Valid);
 
-    dockyard.forEach((dock) => (dock.style.cursor = "default"));
+    ui.player.user.docks.forEach((dock) => (dock.style.cursor = "default"));
+    ui.board.cells.forEach((cell) => (cell.style.zIndex = "unset"));
 
-    cells.forEach((cell) => (cell.style.zIndex = "unset"));
-
-    generateMasks(cells, handleAttack);
+    generateMasks(ui.board.cells, handleAttack);
     actionCarousel(200);
 
     buttonMask.classList.remove("toggle-button-mask");
@@ -602,7 +583,7 @@ const Battleship = (() => {
     player1.fleet.map((ship) => occupied.push(ship.position.flat()));
     player2.fleet.map((ship) => occupied.push(ship.position.flat()));
 
-    grid.index.forEach((position) => {
+    ui.board.grid.index.forEach((position) => {
       if (occupied.flat().includes(position) === false) {
         copy.push(position);
       }
@@ -611,7 +592,9 @@ const Battleship = (() => {
   }
 
   function placeOpponentShips() {
-    cpuShips.forEach((cpuShip) => newPosition(cpuShip, player2));
+    ui.player.computer.fleet.forEach((cpuShip) =>
+      newPosition(cpuShip, player2)
+    );
 
     const is17 = player2.fleet.reduce((prev, ship) => {
       return prev + ship.position.flat().length;
@@ -654,33 +637,33 @@ const Battleship = (() => {
     player2.board.stats.available = 5;
 
     player1.fleet.forEach((ship) => {
-      ship.shields = ship.length;
+      ship.shields.reset();
       ship.position = [];
       ship.cells = [];
     });
 
     player2.fleet.forEach((ship) => {
-      ship.shields = ship.length;
+      ship.shields.reset();
       ship.position = [];
       ship.cells = [];
     });
 
-    const resestShips = document.querySelectorAll(".ship");
     const homeDocks = document.querySelectorAll(".dock");
 
     homeDocks.forEach((dock, index) => {
-      resestShips[index].style.transform = "rotate(0deg)";
-      resestShips[index].style.left = resestShips[index].dataset.lastX;
-      resestShips[index].style.top = resestShips[index].dataset.lastX;
+      ui.player.user.fleet[index].style.transform = "rotate(0deg)";
+      ui.player.user.fleet[index].style.left =
+        ui.player.user.fleet[index].dataset.lastX;
+      ui.player.user.fleet[index].style.top =
+        ui.player.user.fleet[index].dataset.lastX;
 
-      resestShips[index].dataset.orientate === "east";
+      ui.player.user.fleet[index].dataset.orientate === "east";
 
       dock.classList.remove("deploy");
-      dock.appendChild(resestShips[index]);
+      dock.appendChild(ui.player.user.fleet[index]);
     });
 
-    const cells = document.querySelectorAll(".cell");
-    cells.forEach((cell) => (cell.style.zIndex = "initial"));
+    ui.board.cells.forEach((cell) => (cell.style.zIndex = "initial"));
 
     const masks = document.querySelectorAll(".mask");
     masks.forEach((mask) => mask.remove());
@@ -688,29 +671,29 @@ const Battleship = (() => {
     const icons = document.querySelectorAll(".play-indicators");
     icons.forEach((icon) => icon.remove());
 
-    const bars = document.querySelectorAll(".bar");
-    bars.forEach((bar) => bar.classList.remove("deduct-bar"));
+    ui.score.shieldBars.forEach((bar) => bar.classList.remove("deduct-bar"));
+    ui.score.points.forEach(
+      (point) => (point.style.backgroundColor = "transparent")
+    );
 
-    const points = document.querySelectorAll(".point");
-    points.forEach((point) => (point.style.backgroundColor = "transparent"));
-
-    const cpuShips = document.querySelectorAll(".cpu-ship");
-    cpuShips.forEach((ship) => ship.classList.remove("reveal-ship"));
+    ui.player.computer.fleet.forEach((ship) =>
+      ship.classList.remove("reveal-ship")
+    );
 
     const cpuAside = document.querySelector(".computer-aside");
     cpuAside.style.zIndex = 0;
 
     const cpuDocks = document.querySelectorAll(".dock-cpu");
     cpuDocks.forEach((dock, index) => {
-      cpuShips[index].style.transform = "rotate(0deg)";
-      cpuShips[index].style.left = 0;
-      cpuShips[index].style.top = 0;
+      ui.player.computer.fleet[index].style.transform = "rotate(0deg)";
+      ui.player.computer.fleet[index].style.left = 0;
+      ui.player.computer.fleet[index].style.top = 0;
 
       dock.classList.remove("deploy-cpu");
-      dock.appendChild(cpuShips[index]);
+      dock.appendChild(ui.player.computer.fleet[index]);
     });
 
-    available = grid.index;
+    available = ui.board.grid.index;
     modal.close();
   });
 
