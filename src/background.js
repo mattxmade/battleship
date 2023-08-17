@@ -7,7 +7,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { Water } from "three/examples/jsm/objects/Water.js";
 import { Sky } from "three/examples/jsm/objects/Sky.js";
 
-import waterNormals from "./waternormals.jpg";
+import waterNormals from "./assets/waternormals.jpg";
 
 const Background = (() => {
   let container, stats;
