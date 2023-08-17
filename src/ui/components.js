@@ -1,11 +1,11 @@
-import Grid from "../grid";
+import createGrid from "../createGrid";
 import webpVictory from "../victory.webp";
 
 const uiComponents = () => {
   // game board UI elements
   const gameZone = document.querySelector(".game-zone");
   const gridContainer = document.querySelector(".grid");
-  const grid = Grid(gridContainer);
+  const grid = createGrid(gridContainer);
   const cells = document.querySelectorAll(".cell");
   const gridBlocker = document.querySelector(".grid-blocker");
 
