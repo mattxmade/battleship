@@ -1,5 +1,5 @@
 import createGrid from "../createGrid";
-import webpVictory from "../victory.webp";
+import victoryCupImg from "../assets/victory.webp";
 
 const uiComponents = () => {
   // game board UI elements
@@ -48,7 +48,7 @@ const uiComponents = () => {
     img: document.querySelector("img"),
   };
 
-  result.img.src = webpVictory;
+  result.img.src = victoryCupImg;
 
   Object.freeze(board);
   Object.freeze(player);
